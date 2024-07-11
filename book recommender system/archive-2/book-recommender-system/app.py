@@ -1,13 +1,27 @@
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
-
-popular = pickle.load(open('/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system/model/popular.pkl', 'rb'))
-pt = pickle.load(open('/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system/model/pt.pkl', 'rb'))
-books = pickle.load(open('/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system/model/books.pkl', 'rb'))
-similarity_scores = pickle.load(open('/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system/model/similarity_scores.pkl', 'rb'))
+import os
 
 app = Flask(__name__)
+
+# Define file paths for pickle files
+base_dir = '/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system'
+popular_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/popular.pkl')
+pt_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/pt.pkl')
+books_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/books.pkl')
+similarity_scores_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/similarity_scores.pkl')
+
+# Load pickle files
+try:
+    popular = pickle.load(open(popular_path, 'rb'))
+    pt = pickle.load(open(pt_path, 'rb'))
+    books = pickle.load(open(books_path, 'rb'))
+    similarity_scores = pickle.load(open(similarity_scores_path, 'rb'))
+except FileNotFoundError as e:
+    print(f"Error loading pickle file: {e}")
+    # Handle the error appropriately, such as logging or notifying the user.
+    raise  # Optional: re-raise the exception to terminate the application if files are critical.
 
 @app.route('/')
 def index():
@@ -48,4 +62,5 @@ def recommend():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+
 
