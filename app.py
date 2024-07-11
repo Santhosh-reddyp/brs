@@ -1,66 +1,58 @@
 from flask import Flask, render_template, request
 import pickle
-import numpy as np
 import os
 
 app = Flask(__name__)
 
-# Define file paths for pickle files
-base_dir = '/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system'
-popular_path = os.path.join(base_dir, 'model/popular.pkl')
-pt_path = os.path.join(base_dir, 'model/pt.pkl')
-books_path = os.path.join(base_dir, 'model/books.pkl')
-similarity_scores_path = os.path.join(base_dir, 'model/similarity_scores.pkl')
+# Debug: Print the current working directory
+print("Current working directory:", os.getcwd())
 
-# Load pickle files
-try:
-    popular = pickle.load(open(popular_path, 'rb'))
-    pt = pickle.load(open(pt_path, 'rb'))
-    books = pickle.load(open(books_path, 'rb'))
-    similarity_scores = pickle.load(open(similarity_scores_path, 'rb'))
-except FileNotFoundError as e:
-    print(f"Error loading pickle file: {e}")
-    # Handle the error appropriately, such as logging or notifying the user.
-    raise  # Optional: re-raise the exception to terminate the application if files are critical.
+# Paths to the model files
+model_files = {
+    "books": "model/books.pkl",
+    "popular": "model/popular.pkl",
+    "pt": "model/pt.pkl",
+    "similarity_scores": "model/similarity_scores.pkl"
+}
+
+# Function to load the model
+def load_model(path):
+    try:
+        with open(path, 'rb') as file:
+            model = pickle.load(file)
+        print(f"Model {path} loaded successfully")
+        return model
+    except FileNotFoundError:
+        print(f"File {path} not found.")
+        return None
+    except Exception as e:
+        print(f"An error occurred while loading {path}: {e}")
+        return None
+
+# Load all models
+models = {name: load_model(path) for name, path in model_files.items()}
 
 @app.route('/')
-def index():
-    return render_template('index.html',
-                           book_name=list(popular['Book-Title'].values),
-                           author=list(popular['Book-Author'].values),
-                           image=list(popular['Image-URL-M'].values),
-                           votes=list(popular['num_ratings'].values),
-                           rating=list(popular['avg_rating'].values)
-                           )
+def home():
+    return render_template('index.html')
 
-@app.route('/recommend')
-def recommend_ui():
-    return render_template('recommend.html')
-
-@app.route('/recommend_books', methods=['POST'])
+@app.route('/recommend', methods=['POST'])
 def recommend():
-    user_input = request.form.get('user_input')
-
-    # Check if user_input exists in pt.index
-    if user_input in pt.index:
-        index = np.where(pt.index == user_input)[0][0]
-        similar_items = sorted(list(enumerate(similarity_scores[index])), key=lambda x: x[1], reverse=True)[1:5]
-
-        data = []
-        for i in similar_items:
-            item = []
-            temp_df = books[books['Book-Title'] == pt.index[i[0]]]
-            item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Title'].values))
-            item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Author'].values))
-            item.extend(list(temp_df.drop_duplicates('Book-Title')['Image-URL-M'].values))
-
-            data.append(item)
-
-        return render_template('recommend.html', data=data)
+    if request.method == 'POST':
+        book_name = request.form['book_name']
+        # Assuming you have a function to get recommendations based on the loaded models
+        recommendations = get_recommendations(book_name, models)
+        return render_template('result.html', recommendations=recommendations)
     else:
-        return render_template('recommend.html', error="User input not found in index")
+        return render_template('index.html')
+
+def get_recommendations(book_name, models):
+    # Add your logic to get recommendations using the loaded models
+    # This is a placeholder function
+    return ["Book1", "Book2", "Book3"]
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True)
+
 
 
