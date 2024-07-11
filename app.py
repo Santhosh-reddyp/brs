@@ -7,10 +7,10 @@ app = Flask(__name__)
 
 # Define file paths for pickle files
 base_dir = '/Users/srinivasareddypadala/Desktop/book recommender system/archive-2/book-recommender-system'
-popular_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/popular.pkl')
-pt_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/pt.pkl')
-books_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/books.pkl')
-similarity_scores_path = os.path.join(base_dir, '/Users/srinivasareddypadala/Desktop/brs/book recommender system/archive-2/book-recommender-system/model/similarity_scores.pkl')
+popular_path = os.path.join(base_dir, 'model/popular.pkl')
+pt_path = os.path.join(base_dir, 'model/pt.pkl')
+books_path = os.path.join(base_dir, 'model/books.pkl')
+similarity_scores_path = os.path.join(base_dir, 'model/similarity_scores.pkl')
 
 # Load pickle files
 try:
